@@ -7,7 +7,7 @@ MAX_CHARS = 10_000
 
 def get_file_content(working_directory, file_path):
     working_path = Path(working_directory).resolve()
-    file_path = (working_path / file_path).resolve()
+    file_path = Path(working_path / file_path).resolve()
 
     if not file_path.is_relative_to(working_path):
         return f'Error: Cannot read "{file_path.name}" as it is outside the permitted working directory'

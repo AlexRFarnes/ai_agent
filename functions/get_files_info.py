@@ -10,7 +10,7 @@ def get_files_info(working_directory, directory=None):
 
     # If directory is not none then build the target directory path
     if directory:
-        directory_path = (working_path / directory).resolve()
+        directory_path = Path(working_path / directory).resolve()
 
     # Check if directory is not a directory
     if not directory_path.is_dir():

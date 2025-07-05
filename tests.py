@@ -1,30 +1,20 @@
 import unittest
 
-from functions.get_file_content import get_file_content
+from functions.write_file import write_file
 
 
 class TestCalculator(unittest.TestCase):
     def test(self):
-        # result = get_file_content("calculator", "lorem.txt")
-        # print("Result for file larger than 10,000 characters")
-        # print(result)
-        # print(len(result))
-        # print("\n")
-
-        result = get_file_content("calculator", "main.py")
-        print("Result for calculator/main.py")
+        result = write_file("calculator", "lorem.txt", "wait, this isn't lorem ipsum")
         print(result)
-        print("\n")
 
-        result = get_file_content("calculator", "pkg/calculator.py")
-        print("Result for calculator/pkg/calculator.py")
+        result = write_file(
+            "calculator", "pkg/morelorem.txt", "lorem ipsum dolor sit amet"
+        )
         print(result)
-        print("\n")
 
-        result = get_file_content("calculator", "/bin/cat")
-        print("Result for /bin/cat")
+        result = write_file("calculator", "/tmp/temp.txt", "this should not be allowed")
         print(result)
-        print("\n")
 
 
 if __name__ == "__main__":
