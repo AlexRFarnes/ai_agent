@@ -1,34 +1,30 @@
 import unittest
 
-from functions.get_files_info import get_files_info
+from functions.get_file_content import get_file_content
 
 
 class TestCalculator(unittest.TestCase):
-    def test_cwd(self):
-        result = get_files_info("calculator", ".")
-        # self.assertIn("pkg", result)
-        print(result)
+    def test(self):
+        # result = get_file_content("calculator", "lorem.txt")
+        # print("Result for file larger than 10,000 characters")
+        # print(result)
+        # print(len(result))
+        # print("\n")
 
-    def test_nested_directory(self):
-        result = get_files_info("calculator", "pkg")
-        # self.assertIn("calculator.py", result)
+        result = get_file_content("calculator", "main.py")
+        print("Result for calculator/main.py")
         print(result)
+        print("\n")
 
-    def test_of_cwd_1(self):
-        result = get_files_info("calculator", "/bin")
-        # self.assertEqual(
-        #     result,
-        #     'Error: Cannot list "/bin" as it is outside the permitted working directory',
-        # )
+        result = get_file_content("calculator", "pkg/calculator.py")
+        print("Result for calculator/pkg/calculator.py")
         print(result)
+        print("\n")
 
-    def test_of_cwd_2(self):
-        result = get_files_info("calculator", "../")
-        # self.assertEqual(
-        #     result,
-        #     'Error: Cannot list "../" as it is outside the permitted working directory',
-        # )
+        result = get_file_content("calculator", "/bin/cat")
+        print("Result for /bin/cat")
         print(result)
+        print("\n")
 
 
 if __name__ == "__main__":
