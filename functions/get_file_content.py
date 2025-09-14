@@ -7,22 +7,27 @@ MAX_CHARS = 10_000
 
 def get_file_content(working_directory, file_path):
     working_path = Path(working_directory).resolve()
-    file_path = Path(working_path / file_path).resolve()
+    file = Path(working_path / file_path).resolve()
 
-    if not file_path.is_relative_to(working_path):
-        return f'Error: Cannot read "{file_path.name}" as it is outside the permitted working directory'
+    if not file.is_relative_to(working_path):
+        return f'Error: Cannot read "{file.name}" as it is outside the \
+            permitted working directory'
 
-    if not file_path.is_file():
-        return f'Error: File not found or is not a regular file: "{file_path.name}"'
+    if not file.is_file():
+        return f'Error: File not found or is not a regular file: \
+        "{file.name}"'
 
     try:
-        with file_path.open() as file:
-            result = file.read(MAX_CHARS)
-            if file_path.stat().st_size > MAX_CHARS:
-                result += (
-                    f'[...File "{file_path.name}" truncated at {MAX_CHARS} characters]'
-                )
+        with file.open(encoding="utf-8") as f:
+            result = f.read(MAX_CHARS)
+            if file.stat().st_size > MAX_CHARS:
+                result += f'[...File "{file.name}" truncated at \
+                        {MAX_CHARS} characters]'
 
             return result
-    except Exception as e:
+    except (PermissionError, IsADirectoryError) as e:
         return f"Error: {e}"
+    except UnicodeDecodeError as e:
+        return f"Error: Cannot read file due to encoding issues: {e}"
+    except OSError as e:
+        return f"Error: Filesystem error: {e}"

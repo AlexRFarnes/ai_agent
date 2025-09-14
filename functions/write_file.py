@@ -1,5 +1,6 @@
 # write_file.py
 
+
 from pathlib import Path
 
 
@@ -8,15 +9,21 @@ def write_file(working_directory, file_path, content):
     file_path = Path(working_path / file_path).resolve()
 
     if not file_path.is_relative_to(working_path):
-        return f'Error: Cannot write to "{file_path.name}" as it is outside the permitted working directory'
+        return f'Error: Cannot write to "{file_path.name}" as it is outside \
+            the permitted working directory'
 
     try:
         # Create parent directories if they don't exist
         file_path.parent.mkdir(parents=True, exist_ok=True)
         # Create the file if it doesn't exist
-        with file_path.open(mode="w") as file:
+        with open(file_path, mode="w", encoding="utf-8") as file:
             file.write(content)
-            return f'Successfully wrote to "{file_path.name}" ({len(content)} characters written)'
+            return f'Successfully wrote to "{file_path.name}" \
+                ({len(content)} characters written)'
 
-    except Exception as e:
+    except (PermissionError, IsADirectoryError) as e:
+        return f"Error: {e}"
+    except UnicodeEncodeError as e:
+        return f"Error: Cannot write file due to encoding issues: {e}"
+    except OSError as e:
         return f"Error: {e}"

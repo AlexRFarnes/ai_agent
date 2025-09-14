@@ -18,7 +18,8 @@ def get_files_info(working_directory, directory=None):
 
     # Check if directory is outside of the working directory
     if not directory_path.is_relative_to(working_path):
-        return f'Error: Cannot list "{directory}" as it is outside the permitted working directory'
+        return f'Error: Cannot list "{directory}" as it is outside the \
+            permitted working directory'
 
     try:
         files_info = []
@@ -26,8 +27,15 @@ def get_files_info(working_directory, directory=None):
             name = filename.name
             size = filename.stat().st_size
             is_dir = filename.is_dir()
-            files_info.append(f"- {name}: file_size={size} bytes, is_dir={is_dir}")
+            files_info.append(
+                f"- {name}: file_size={size} bytes, \
+            is_dir={is_dir}"
+            )
         return "\n".join(files_info)
 
-    except Exception as e:
+    except (PermissionError, IsADirectoryError) as e:
         return f"Error: {e}"
+    except UnicodeDecodeError as e:
+        return f"Error: Cannot read file due to encoding issues: {e}"
+    except OSError as e:
+        return f"Error: Filesystem error: {e}"
