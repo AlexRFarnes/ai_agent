@@ -2,6 +2,8 @@
 
 from pathlib import Path
 
+from google.genai import types
+
 MAX_CHARS = 10_000
 
 
@@ -31,3 +33,18 @@ def get_file_content(working_directory, file_path):
         return f"Error: Cannot read file due to encoding issues: {e}"
     except OSError as e:
         return f"Error: Filesystem error: {e}"
+
+
+schema_get_file_content = types.FunctionDeclaration(
+    name="get_file_content",
+    description="List the content of the specified file, constrained to the working directory.",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="The path to the file to get the content of, relative to the working directory.",
+            ),
+        },
+    ),
+)
