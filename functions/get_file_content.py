@@ -4,7 +4,7 @@ from pathlib import Path
 
 from google.genai import types
 
-MAX_CHARS = 10_000
+from config import MAX_CHARS
 
 
 def get_file_content(working_directory: Path, file_path: Path):
