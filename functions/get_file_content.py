@@ -7,7 +7,7 @@ from google.genai import types
 MAX_CHARS = 10_000
 
 
-def get_file_content(working_directory, file_path):
+def get_file_content(working_directory: Path, file_path: Path):
     working_path = Path(working_directory).resolve()
     file = Path(working_path / file_path).resolve()
 

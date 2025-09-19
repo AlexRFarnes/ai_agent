@@ -6,7 +6,7 @@ from pathlib import Path
 from google.genai import types
 
 
-def write_file(working_directory, file_path, content):
+def write_file(working_directory: Path, file_path: Path, content: str):
     working_path = Path(working_directory).resolve()
     file_path = Path(working_path / file_path).resolve()
 

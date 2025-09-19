@@ -5,7 +5,7 @@ from pathlib import Path
 from google.genai import types
 
 
-def get_files_info(working_directory, directory=None):
+def get_files_info(working_directory: Path, directory: Path | None = None):
     working_path = Path(working_directory).resolve()
 
     directory_path = working_path

@@ -7,7 +7,7 @@ from pathlib import Path
 from google.genai import types
 
 
-def run_python_file(working_directory, file_path, args=[]):
+def run_python_file(working_directory: Path, file_path: Path, args: list[str] = []):
     working_path = Path(working_directory).resolve()
     file = Path(working_path / file_path).resolve()
 

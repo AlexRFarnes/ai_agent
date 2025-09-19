@@ -7,10 +7,10 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 
-from functions.get_file_content import schema_get_file_content
-from functions.get_files_info import schema_get_files_info
-from functions.run_python import schema_run_python_file
-from functions.write_file import schema_write_file
+from functions.get_file_content import get_file_content, schema_get_file_content
+from functions.get_files_info import get_files_info, schema_get_files_info
+from functions.run_python import run_python_file, schema_run_python_file
+from functions.write_file import schema_write_file, write_file
 
 load_dotenv()
 
@@ -56,9 +56,58 @@ def generate_content(client, messages, verbose):
             args = dict(function_call_part.args or {})
             if name == "run_python_file":
                 args["args"] = args.get("args") or []
-            print(f"Calling function: {name}({args})")
+            function_call_result = call_function(function_call_part, verbose)
+            if not function_call_result.parts[0].function_response.response:
+                raise Exception(f"Something went wrong while calling function: {name}")
+            if verbose:
+                print(f"-> {function_call_result.parts[0].function_response.response}")
     else:
         print("Response:", response.text)
+
+
+def call_function(
+    function_call_part: types.FunctionCallPart, verbose: bool = False
+) -> types.Content:
+    if verbose:
+        print(f"Calling function: {function_call_part.name}({function_call_part.args})")
+    else:
+        print(f" - Calling function: {function_call_part.name}")
+
+    working_directory = "./calculator"
+    function_name = function_call_part.name
+    args = dict(function_call_part.args or {})
+    function_map = {
+        "run_python_file": run_python_file,
+        "write_file": write_file,
+        "get_file_content": get_file_content,
+        "get_files_info": get_files_info,
+    }
+
+    function = function_map.get(function_name)
+
+    if not function:
+        return types.Content(
+            role="tool",
+            parts=[
+                types.Part.from_function_response(
+                    name=function_name,
+                    response={"error": f"Unknown function: {function_name}"},
+                )
+            ],
+        )
+
+    args["working_directory"] = working_directory
+    function_result = function(**args)
+
+    return types.Content(
+        role="tool",
+        parts=[
+            types.Part.from_function_response(
+                name=function_name,
+                response={"result": function_result},
+            )
+        ],
+    )
 
 
 def main():
