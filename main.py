@@ -8,6 +8,7 @@ from google import genai
 from google.genai import types
 
 from call_function import call_function
+from config import MAX_ITERATIONS
 from functions.get_file_content import schema_get_file_content
 from functions.get_files_info import schema_get_files_info
 from functions.run_python import schema_run_python_file
@@ -46,6 +47,13 @@ def generate_content(client, messages, verbose):
             system_instruction=system_prompt, tools=[available_functions]
         ),
     )
+    for candidate in response.candidates:
+        messages = [
+            types.Content(
+                role=candidate.content.role,
+                parts=[types.Part(text=candidate.content.parts[0].text)],
+            )
+        ]
 
     if verbose:
         print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
@@ -65,6 +73,14 @@ def generate_content(client, messages, verbose):
         if verbose:
             print(f"-> {function_call_result.parts[0].function_response.response}")
         function_responses.append(function_call_result.parts[0])
+        messages.append(
+            types.Content(
+                role="user",
+                parts=[
+                    types.Part(function_call_result.parts[0].function_response.response)
+                ],
+            )
+        )
 
     if not function_responses:
         raise Exception("no function responses generated, exiting.")
@@ -89,7 +105,15 @@ def main():
 
     messages = [types.Content(role="user", parts=[types.Part(text=prompt)])]
 
-    generate_content(client, messages, verbose)
+    for _ in range(MAX_ITERATIONS):
+        try:
+            content = generate_content(client, messages, verbose)
+            if content:
+                print(content)
+                break
+        except Exception as e:
+            print(f"Error: {e}")
+            sys.exit(1)
 
 
 if __name__ == "__main__":
